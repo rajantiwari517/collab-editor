@@ -6,6 +6,7 @@ export default function CodeRoom({ roomId, username }) {
   const [code, setCode] = useState("");
   const [users, setUsers] = useState([]);
   const [language, setLanguage] = useState("javascript");
+  const [copied, setCopied] = useState(false);
   const codeRef = useRef("");
 
   useEffect(() => {
@@ -28,6 +29,11 @@ export default function CodeRoom({ roomId, username }) {
     setCode(value);
     socket.emit("code-change", { roomId, code: value });
   };
+  const copyLink = async () => {
+  await navigator.clipboard.writeText(window.location.href);
+  setCopied(true);
+  setTimeout(() => setCopied(false), 2000);
+};
 
   return (
     <div>
@@ -39,6 +45,8 @@ export default function CodeRoom({ roomId, username }) {
           <option value="cpp">C++</option>
           <option value="java">Java</option>
         </select>
+        {" "}
+<button onClick={copyLink}>{copied ? "Copied!" : "Copy room link"}</button>
       </div>
       <Editor
         height="90vh"
