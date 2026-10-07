@@ -7,6 +7,7 @@ export default function CodeRoom({ roomId, username }) {
   const [users, setUsers] = useState([]);
   const [language, setLanguage] = useState("javascript");
   const [copied, setCopied] = useState(false);
+  const [theme, setTheme] = useState("vs-dark");
   const codeRef = useRef("");
 
   useEffect(() => {
@@ -47,7 +48,7 @@ const downloadCode = () => {
 
   return (
     <div>
-      <div style={{ padding: 10, background: "#222", color: "white" }}>
+      <div style={{ padding: 10, background: theme === "vs-dark" ? "#222" : "#eee", color: theme === "vs-dark" ? "white" : "black" }}>
         Room: <b>{roomId}</b> | Users: {users.join(", ")} |{" "}
         <select value={language} onChange={(e) => setLanguage(e.target.value)}>
           <option value="javascript">JavaScript</option>
@@ -59,13 +60,17 @@ const downloadCode = () => {
 <button onClick={copyLink}>{copied ? "Copied!" : "Copy room link"}</button>
 {" "}
 <button onClick={downloadCode}>Download</button>
+{" "}
+<button onClick={() => setTheme(theme === "vs-dark" ? "light" : "vs-dark")}>
+  {theme === "vs-dark" ? "Light mode" : "Dark mode"}
+</button>
       </div>
       <Editor
         height="90vh"
         language={language}
         value={code}
         onChange={handleChange}
-        theme="vs-dark"
+        theme={theme}
       />
     </div>
   );
