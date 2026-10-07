@@ -2,34 +2,39 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const WebSocket = require("ws");
+const { setupWSConnection } = require("y-websocket/bin/utils");
 
 const app = express();
 app.use(cors());
+app.get("/", (req, res) => res.send("Collab editor server running"));
+
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-const rooms = {}; // roomId -> { code, users }
+// Yjs text syncing, served on the same port under /yjs
+const wss = new WebSocket.Server({ noServer: true });
+wss.on("connection", (conn, req) => setupWSConnection(conn, req));
+server.on("upgrade", (req, socket, head) => {
+  if (req.url.startsWith("/yjs")) {
+    wss.handleUpgrade(req, socket, head, (ws) => wss.emit("connection", ws, req));
+  }
+});
+
+const rooms = {}; // roomId -> { users }
 
 io.on("connection", (socket) => {
-    socket.on("typing", ({ roomId }) => {
-  socket.to(roomId).emit("user-typing", socket.data.username);
-});
   socket.on("join-room", ({ roomId, username }) => {
     socket.join(roomId);
     socket.data = { roomId, username };
-    if (!rooms[roomId]) rooms[roomId] = { code: "// Start coding...", users: {} };
+    if (!rooms[roomId]) rooms[roomId] = { users: {} };
     rooms[roomId].users[socket.id] = username;
-
-    socket.emit("init-code", rooms[roomId].code);
     io.to(roomId).emit("users-update", Object.values(rooms[roomId].users));
   });
 
- socket.on("code-change", ({ roomId, code }) => {
-  if (!rooms[roomId]) return;
-  rooms[roomId].code = code;
-  socket.to(roomId).emit("code-update", code);
-  socket.to(roomId).emit("user-typing", socket.data.username);
-});
+  socket.on("typing", ({ roomId }) => {
+    socket.to(roomId).emit("user-typing", socket.data.username);
+  });
 
   socket.on("disconnect", () => {
     const { roomId } = socket.data || {};
@@ -40,4 +45,5 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(5000, () => console.log("Server running on port 5000"));
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => console.log("Server running on port " + PORT));

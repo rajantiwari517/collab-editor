@@ -1,4 +1,4 @@
 import { io } from "socket.io-client";
-export const socket = io("http://localhost:5000");
 
-socket.on("connect", () => console.log("Connected:", socket.id));
+export const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
+export const socket = io(SERVER_URL);

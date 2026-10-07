@@ -3,7 +3,7 @@ import Editor from "@monaco-editor/react";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { MonacoBinding } from "y-monaco";
-import { socket } from "./socket";
+import { socket, SERVER_URL } from "./socket";
 
 export default function CodeRoom({ roomId, username }) {
   const [users, setUsers] = useState([]);
@@ -42,7 +42,11 @@ export default function CodeRoom({ roomId, username }) {
     editorRef.current = editor;
 
     const ydoc = new Y.Doc();
-    const provider = new WebsocketProvider("ws://localhost:1234", roomId, ydoc);
+    const provider = new WebsocketProvider(
+  SERVER_URL.replace(/^http/, "ws") + "/yjs",
+  roomId,
+  ydoc
+);
     const ytext = ydoc.getText("code");
 
     const binding = new MonacoBinding(
