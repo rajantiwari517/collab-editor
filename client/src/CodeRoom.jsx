@@ -34,6 +34,16 @@ export default function CodeRoom({ roomId, username }) {
   setCopied(true);
   setTimeout(() => setCopied(false), 2000);
 };
+const downloadCode = () => {
+  const extensions = { javascript: "js", python: "py", cpp: "cpp", java: "java" };
+  const blob = new Blob([code], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `code-${roomId}.${extensions[language]}`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
   return (
     <div>
@@ -47,6 +57,8 @@ export default function CodeRoom({ roomId, username }) {
         </select>
         {" "}
 <button onClick={copyLink}>{copied ? "Copied!" : "Copy room link"}</button>
+{" "}
+<button onClick={downloadCode}>Download</button>
       </div>
       <Editor
         height="90vh"
