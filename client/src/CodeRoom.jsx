@@ -8,6 +8,10 @@ export default function CodeRoom({ roomId, username }) {
   const [language, setLanguage] = useState("javascript");
   const [copied, setCopied] = useState(false);
   const [theme, setTheme] = useState("vs-dark");
+  const [typingUser, setTypingUser] = useState("");
+const typingTimeout = useRef(null);
+const [output, setOutput] = useState("");
+const [running, setRunning] = useState(false);
   const codeRef = useRef("");
 
   useEffect(() => {
@@ -16,11 +20,17 @@ export default function CodeRoom({ roomId, username }) {
     socket.on("init-code", (c) => { codeRef.current = c; setCode(c); });
     socket.on("code-update", (c) => { codeRef.current = c; setCode(c); });
     socket.on("users-update", setUsers);
+    socket.on("user-typing", (name) => {
+  setTypingUser(name);
+  clearTimeout(typingTimeout.current);
+  typingTimeout.current = setTimeout(() => setTypingUser(""), 1500);
+});
 
     return () => {
       socket.off("init-code");
       socket.off("code-update");
       socket.off("users-update");
+      socket.off("user-typing");
     };
   }, [roomId, username]);
 
@@ -45,6 +55,31 @@ const downloadCode = () => {
   a.click();
   URL.revokeObjectURL(url);
 };
+const runCode = async () => {
+  const languageIds = { javascript: 63, python: 71, cpp: 54, java: 62 };
+  setRunning(true);
+  setOutput("Running...");
+  try {
+    const res = await fetch(
+      "https://ce.judge0.com/submissions?base64_encoded=false&wait=true",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source_code: code,
+          language_id: languageIds[language],
+        }),
+      }
+    );
+    const data = await res.json();
+    setOutput(
+      data.stdout || data.stderr || data.compile_output || data.message || "No output"
+    );
+  } catch (err) {
+    setOutput("Error: could not reach the code runner.");
+  }
+  setRunning(false);
+};
 
   return (
     <div>
@@ -64,7 +99,14 @@ const downloadCode = () => {
 <button onClick={() => setTheme(theme === "vs-dark" ? "light" : "vs-dark")}>
   {theme === "vs-dark" ? "Light mode" : "Dark mode"}
 </button>
+{" "}
+<button onClick={runCode} disabled={running}>
+  {running ? "Running..." : "Run"}
+</button>
       </div>
+      <div style={{ height: 22, fontSize: 13, padding: "2px 10px" }}>
+  {typingUser && `${typingUser} is typing...`}
+</div>
       <Editor
         height="90vh"
         language={language}
@@ -72,6 +114,18 @@ const downloadCode = () => {
         onChange={handleChange}
         theme={theme}
       />
+      <pre
+  style={{
+    margin: 0,
+    padding: 10,
+    height: "15vh",
+    overflow: "auto",
+    background: theme === "vs-dark" ? "#111" : "#f5f5f5",
+    color: theme === "vs-dark" ? "#0f0" : "#000",
+  }}
+>
+  {output || "Output will appear here"}
+</pre>
     </div>
   );
 }

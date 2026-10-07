@@ -21,11 +21,12 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("users-update", Object.values(rooms[roomId].users));
   });
 
-  socket.on("code-change", ({ roomId, code }) => {
-    if (!rooms[roomId]) return;
-    rooms[roomId].code = code;
-    socket.to(roomId).emit("code-update", code);
-  });
+ socket.on("code-change", ({ roomId, code }) => {
+  if (!rooms[roomId]) return;
+  rooms[roomId].code = code;
+  socket.to(roomId).emit("code-update", code);
+  socket.to(roomId).emit("user-typing", socket.data.username);
+});
 
   socket.on("disconnect", () => {
     const { roomId } = socket.data || {};
