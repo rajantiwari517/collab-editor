@@ -11,6 +11,9 @@ const io = new Server(server, { cors: { origin: "*" } });
 const rooms = {}; // roomId -> { code, users }
 
 io.on("connection", (socket) => {
+    socket.on("typing", ({ roomId }) => {
+  socket.to(roomId).emit("user-typing", socket.data.username);
+});
   socket.on("join-room", ({ roomId, username }) => {
     socket.join(roomId);
     socket.data = { roomId, username };
