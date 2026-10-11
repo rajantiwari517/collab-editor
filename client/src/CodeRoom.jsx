@@ -5,7 +5,77 @@ import { WebsocketProvider } from "y-websocket";
 import { MonacoBinding } from "y-monaco";
 import { socket, SERVER_URL } from "./socket";
 import "./CodeRoom.css";
+const TEMPLATES = {
+  javascript: '// console.log("Hello, World!");\n',
+  python: '# print("Hello, World!")\n',
+  cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n    // cout << "Hello, World!" << endl;\n    return 0;\n}\n',
+  java: 'public class Main {\n    public static void main(String[] args) {\n        // System.out.println("Hello, World!");\n    }\n}\n',
+};
 
+const SNIPPETS = {
+  java: [
+    ["main", "public static void main(String[] args) {\n\t$0\n}", "main method"],
+    ["sout", "System.out.println($1);", "print a line"],
+    ["fori", "for (int i = 0; i < ${1:n}; i++) {\n\t$0\n}", "for loop"],
+    ["class", "public class ${1:Main} {\n\t$0\n}", "class"],
+    ["if", "if ($1) {\n\t$0\n}", "if statement"],
+    ["scanner", "Scanner sc = new Scanner(System.in);", "read input"],
+  ],
+  python: [
+    ["def", "def ${1:name}($2):\n\t$0", "function"],
+    ["for", "for ${1:i} in range(${2:n}):\n\t$0", "for loop"],
+    ["if", "if $1:\n\t$0", "if statement"],
+    ["class", "class ${1:Name}:\n\tdef __init__(self$2):\n\t\t$0", "class"],
+    ["main", 'if __name__ == "__main__":\n\t$0', "main guard"],
+    ["input", "${1:x} = input($2)", "read input"],
+  ],
+  cpp: [
+    ["main", "int main() {\n\t$0\n\treturn 0;\n}", "main function"],
+    ["cout", "cout << $1 << endl;", "print a line"],
+    ["for", "for (int i = 0; i < ${1:n}; i++) {\n\t$0\n}", "for loop"],
+    ["inc", "#include <${1:iostream}>", "include"],
+    ["if", "if ($1) {\n\t$0\n}", "if statement"],
+    ["cin", "cin >> $1;", "read input"],
+  ],
+  javascript: [
+    ["log", "console.log($1);", "console.log"],
+    ["fn", "function ${1:name}($2) {\n\t$0\n}", "function"],
+    ["arrow", "const ${1:name} = ($2) => {\n\t$0\n};", "arrow function"],
+    ["for", "for (let i = 0; i < ${1:n}; i++) {\n\t$0\n}", "for loop"],
+    ["if", "if ($1) {\n\t$0\n}", "if statement"],
+  ],
+};
+
+let snippetsRegistered = false;
+
+function registerSnippets(monaco) {
+  if (snippetsRegistered) return;
+  snippetsRegistered = true;
+  Object.entries(SNIPPETS).forEach(([lang, items]) => {
+    monaco.languages.registerCompletionItemProvider(lang, {
+      provideCompletionItems: (model, position) => {
+        const word = model.getWordUntilPosition(position);
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
+        return {
+          suggestions: items.map(([label, insertText, detail]) => ({
+            label,
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText,
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            detail,
+            range,
+          })),
+        };
+      },
+    });
+  });
+}
 export default function CodeRoom({ roomId, username }) {
   const [users, setUsers] = useState([]);
   const [language, setLanguage] = useState("javascript");
@@ -39,7 +109,8 @@ export default function CodeRoom({ roomId, username }) {
     return () => cleanupRef.current?.();
   }, []);
 
-  const handleMount = (editor) => {
+  const handleMount = (editor, monaco) => {
+  registerSnippets(monaco);
     cleanupRef.current?.();
     editorRef.current = editor;
 
@@ -50,6 +121,9 @@ export default function CodeRoom({ roomId, username }) {
   ydoc
 );
     const ytext = ydoc.getText("code");
+        provider.on("sync", (synced) => {
+      if (synced && ytext.length === 0) ytext.insert(0, TEMPLATES.javascript);
+    });
 
     const binding = new MonacoBinding(
       ytext,
@@ -131,7 +205,17 @@ const nativeShare = async () => {
 
   const dark = theme === "vs-dark";
 
-  
+  const changeLanguage = (lang) => {
+  const editor = editorRef.current;
+  if (editor) {
+    const current = editor.getValue();
+    const untouched = Object.values(TEMPLATES).includes(current);
+    if (current.trim() === "" || untouched) {
+      editor.setValue(TEMPLATES[lang]);
+    }
+  }
+  setLanguage(lang);
+};
   return (
     <div className={`app ${dark ? "dark" : "light"}`}>
       <div className="header">
@@ -147,7 +231,7 @@ const nativeShare = async () => {
 
         <div className="spacer" />
 
-        <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+        <select value={language} onChange={(e) => changeLanguage(e.target.value)}>
           <option value="javascript">JavaScript</option>
           <option value="python">Python</option>
           <option value="cpp">C++</option>
@@ -216,21 +300,21 @@ const nativeShare = async () => {
 
       <div className="typing">{typingUser && `${typingUser} is typing...`}</div>
 
-      <div className="editor-card">
-        <Editor
-          height="55vh"
-          language={language}
-          theme={theme}
-          onMount={handleMount}
-          options={{
-            fontSize: 14,
-            fontFamily: "Fira Code, monospace",
-            minimap: { enabled: false },
-            padding: { top: 8 },
-            scrollBeyondLastLine: false,
-          }}
-        />
-      </div>
+   <div className="editor-card">
+  <Editor
+    height="55vh"
+    language={language}
+    theme={theme}
+    onMount={handleMount}
+    options={{
+      fontSize: 14,
+      fontFamily: "Fira Code, monospace",
+      minimap: { enabled: false },
+      padding: { top: 8 },
+      scrollBeyondLastLine: false,
+    }}
+  />
+</div>
 
       <div className="output-label">Output</div>
       <pre className="output">{output || "Run your code to see output here"}</pre>
