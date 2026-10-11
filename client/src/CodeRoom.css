@@ -121,3 +121,33 @@
 @media (max-width: 600px) {
   .app { padding: 16px; }
 }
+.share-wrap { position: relative; }
+
+.share-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 10;
+  min-width: 170px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--card);
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(28, 35, 51, 0.18);
+  border: 1px solid var(--border, #d9dee8);
+}
+
+.header .share-menu button {
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font-weight: 500;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+.header .share-menu button:hover {
+  background: var(--bg);
+  opacity: 1;
+}

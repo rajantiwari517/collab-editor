@@ -10,6 +10,7 @@ export default function CodeRoom({ roomId, username }) {
   const [users, setUsers] = useState([]);
   const [language, setLanguage] = useState("javascript");
   const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
  const [theme, setTheme] = useState("light");
   const [typingUser, setTypingUser] = useState("");
   const typingTimeout = useRef(null);
@@ -75,7 +76,22 @@ export default function CodeRoom({ roomId, username }) {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+const shareLink = window.location.href;
+const shareText = "Join my coding room on CollabCode: ";
 
+const openShare = (url) => {
+  window.open(url, "_blank", "noopener,noreferrer");
+  setShareOpen(false);
+};
+
+const nativeShare = async () => {
+  try {
+    await navigator.share({ title: "CollabCode", text: shareText, url: shareLink });
+  } catch (err) {
+    // the person closed the share sheet, nothing to do
+  }
+  setShareOpen(false);
+};
   const downloadCode = () => {
     const extensions = { javascript: "js", python: "py", cpp: "cpp", java: "java" };
     const blob = new Blob([getCode()], { type: "text/plain" });
@@ -137,7 +153,58 @@ export default function CodeRoom({ roomId, username }) {
           <option value="cpp">C++</option>
           <option value="java">Java</option>
         </select>
-        <button onClick={copyLink}>{copied ? "Copied!" : "Share"}</button>
+        <div className="share-wrap">
+  <button onClick={() => setShareOpen(!shareOpen)}>Share</button>
+  {shareOpen && (
+    <div className="share-menu">
+      <button
+        onClick={() =>
+          openShare("https://wa.me/?text=" + encodeURIComponent(shareText + shareLink))
+        }
+      >
+        WhatsApp
+      </button>
+      <button
+        onClick={() =>
+          openShare(
+            "https://t.me/share/url?url=" +
+              encodeURIComponent(shareLink) +
+              "&text=" +
+              encodeURIComponent(shareText)
+          )
+        }
+      >
+        Telegram
+      </button>
+      <button
+        onClick={() =>
+          openShare(
+            "https://twitter.com/intent/tweet?text=" +
+              encodeURIComponent(shareText) +
+              "&url=" +
+              encodeURIComponent(shareLink)
+          )
+        }
+      >
+        X (Twitter)
+      </button>
+      <button
+        onClick={() =>
+          openShare(
+            "mailto:?subject=" +
+              encodeURIComponent("Join my coding room") +
+              "&body=" +
+              encodeURIComponent(shareText + shareLink)
+          )
+        }
+      >
+        Email
+      </button>
+      <button onClick={copyLink}>{copied ? "Copied!" : "Copy link"}</button>
+      {navigator.share && <button onClick={nativeShare}>More...</button>}
+    </div>
+  )}
+</div>
         <button onClick={downloadCode}>Download</button>
         <button onClick={() => setTheme(dark ? "light" : "vs-dark")}>
           {dark ? "Light" : "Dark"}
