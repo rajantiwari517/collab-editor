@@ -4,12 +4,13 @@ import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { MonacoBinding } from "y-monaco";
 import { socket, SERVER_URL } from "./socket";
+import "./CodeRoom.css";
 
 export default function CodeRoom({ roomId, username }) {
   const [users, setUsers] = useState([]);
   const [language, setLanguage] = useState("javascript");
   const [copied, setCopied] = useState(false);
-  const [theme, setTheme] = useState("vs-dark");
+ const [theme, setTheme] = useState("light");
   const [typingUser, setTypingUser] = useState("");
   const typingTimeout = useRef(null);
   const [output, setOutput] = useState("");
@@ -114,55 +115,58 @@ export default function CodeRoom({ roomId, username }) {
 
   const dark = theme === "vs-dark";
 
+  
   return (
-    <div>
-      <div
-        style={{
-          padding: 10,
-          background: dark ? "#222" : "#eee",
-          color: dark ? "white" : "black",
-        }}
-      >
-        Room: <b>{roomId}</b> | Users: {users.join(", ")} |{" "}
+    <div className={`app ${dark ? "dark" : "light"}`}>
+      <div className="header">
+        <span className="brand">CollabCode</span>
+        <span className="room">Room {roomId}</span>
+        <div className="avatars">
+          {users.map((u, i) => (
+            <span key={i} className={`avatar c${i % 4}`} title={u}>
+              {u[0] + u.slice(-2)}
+            </span>
+          ))}
+        </div>
+
+        <div className="spacer" />
+
         <select value={language} onChange={(e) => setLanguage(e.target.value)}>
           <option value="javascript">JavaScript</option>
           <option value="python">Python</option>
           <option value="cpp">C++</option>
           <option value="java">Java</option>
-        </select>{" "}
-        <button onClick={copyLink}>{copied ? "Copied!" : "Copy room link"}</button>{" "}
-        <button onClick={downloadCode}>Download</button>{" "}
+        </select>
+        <button onClick={copyLink}>{copied ? "Copied!" : "Share"}</button>
+        <button onClick={downloadCode}>Download</button>
         <button onClick={() => setTheme(dark ? "light" : "vs-dark")}>
-          {dark ? "Light mode" : "Dark mode"}
-        </button>{" "}
-        <button onClick={runCode} disabled={running}>
-          {running ? "Running..." : "Run"}
+          {dark ? "Light" : "Dark"}
+        </button>
+        <button className="primary" onClick={runCode} disabled={running}>
+          {running ? "Running..." : "Run code"}
         </button>
       </div>
 
-      <div style={{ height: 22, fontSize: 13, padding: "2px 10px" }}>
-        {typingUser && `${typingUser} is typing...`}
+      <div className="typing">{typingUser && `${typingUser} is typing...`}</div>
+
+      <div className="editor-card">
+        <Editor
+          height="55vh"
+          language={language}
+          theme={theme}
+          onMount={handleMount}
+          options={{
+            fontSize: 14,
+            fontFamily: "Fira Code, monospace",
+            minimap: { enabled: false },
+            padding: { top: 8 },
+            scrollBeyondLastLine: false,
+          }}
+        />
       </div>
 
-      <Editor
-        height="70vh"
-        language={language}
-        theme={theme}
-        onMount={handleMount}
-      />
-
-      <pre
-        style={{
-          margin: 0,
-          padding: 10,
-          height: "15vh",
-          overflow: "auto",
-          background: dark ? "#111" : "#f5f5f5",
-          color: dark ? "#0f0" : "#000",
-        }}
-      >
-        {output || "Output will appear here"}
-      </pre>
+      <div className="output-label">Output</div>
+      <pre className="output">{output || "Run your code to see output here"}</pre>
     </div>
   );
 }

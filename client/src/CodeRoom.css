@@ -1,0 +1,123 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Fira+Code:wght@400;500&display=swap");
+
+.app {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 24px 32px;
+  font-family: "Manrope", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+.app.light {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #1c2333;
+  --muted: #5b6479;
+  --accent: #2557d6;
+  --shadow: 0 2px 12px rgba(28, 35, 51, 0.08);
+}
+.app.dark {
+  --bg: #0f1320;
+  --card: #1a2033;
+  --text: #e8ecf5;
+  --muted: #98a2bb;
+  --accent: #4f7df0;
+  --shadow: none;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+.brand {
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--accent);
+}
+.room {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.avatars { display: flex; }
+.avatar {
+  width: 34px;
+  height: 34px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  border: 3px solid var(--bg);
+  margin-left: -10px;
+}
+.avatar:first-child { margin-left: 0; }
+.avatar.c0 { background: #2557d6; }
+.avatar.c1 { background: #e8590c; }
+.avatar.c2 { background: #1a7f4b; }
+.avatar.c3 { background: #7a3ec8; }
+
+.spacer { flex: 1; }
+
+/* every button and the dropdown: solid blue pill, white text */
+.header select,
+.header button {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px 20px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+.header select { appearance: none; text-align: center; }
+.header select option { color: #1c2333; background: #fff; }
+.header button:hover,
+.header select:hover { opacity: 0.88; }
+.header button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.typing {
+  height: 18px;
+  margin: 16px 0 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.editor-card {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding-top: 12px;
+  overflow: hidden;
+}
+
+.output-label {
+  margin: 20px 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.output {
+  margin: 0;
+  padding: 16px 18px;
+  height: 14vh;
+  overflow: auto;
+  border-radius: 18px;
+  background: #1c2333;
+  color: #e8ecf5;
+  font-family: "Fira Code", monospace;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .app { padding: 16px; }
+}
