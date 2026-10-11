@@ -5,6 +5,7 @@ import { WebsocketProvider } from "y-websocket";
 import { MonacoBinding } from "y-monaco";
 import { socket, SERVER_URL } from "./socket";
 import "./CodeRoom.css";
+import RoomPanel from "./RoomPanel";
 const TEMPLATES = {
   javascript: '// console.log("Hello, World!");\n',
   python: '# print("Hello, World!")\n',
@@ -325,7 +326,10 @@ const changeLanguage = (lang) => {
       </div>
 
       <div className="output-label">Output</div>
-      <pre className="output">{output || "Run your code to see output here"}</pre>
+           <pre className="output">{output || "Run your code to see output here"}</pre>
+      <RoomPanel roomId={roomId} />
     </div>
   );
+    
+  
 }
