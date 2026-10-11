@@ -24,6 +24,7 @@ server.on("upgrade", (req, socket, head) => {
 const rooms = {}; // roomId -> { users, messages }
 
 io.on("connection", (socket) => {
+    socket.onAny((event) => console.log("EVENT:", event));
   socket.on("join-room", ({ roomId, username }) => {
     socket.join(roomId);
     socket.data = { roomId, username, inCall: false };
@@ -38,11 +39,11 @@ io.on("connection", (socket) => {
   });
 
   // ---------- chat ----------
-  socket.on("chat-message", ({ roomId, text }) => {
-  console.log("CHAT:", roomId, text);
+  socket.on("chat-message", ({ roomId, text, id }) => {
+    console.log("CHAT:", roomId, text);
     if (!rooms[roomId] || typeof text !== "string" || !text.trim()) return;
     const msg = {
-      id: socket.id + "-" + Date.now(),
+      id: typeof id === "string" ? id : socket.id + "-" + Date.now(),
       sid: socket.id,
       user: socket.data.username,
       text: text.trim().slice(0, 500),
@@ -53,7 +54,7 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("chat-message", msg);
   });
 
-  // ---------- voice / video calls ----------
+  // ---------- calls ----------
   socket.on("call-join", ({ roomId }) => {
     const peers = [];
     for (const id of io.sockets.adapter.rooms.get(roomId) || []) {
@@ -62,6 +63,19 @@ io.on("connection", (socket) => {
     }
     socket.data.inCall = true;
     socket.emit("call-peers", peers);
+  });
+
+  socket.on("call-ring", ({ roomId, video }) => {
+    console.log("RING from", socket.data.username, "in room", roomId);
+    socket.to(roomId).emit("incoming-call", {
+      from: socket.id,
+      user: socket.data.username,
+      video,
+    });
+  });
+
+  socket.on("call-decline", ({ to }) => {
+    io.to(to).emit("call-declined", socket.data.username);
   });
 
   socket.on("webrtc-signal", ({ to, data }) => {
