@@ -205,12 +205,20 @@ const nativeShare = async () => {
 
   const dark = theme === "vs-dark";
 
-  const changeLanguage = (lang) => {
+ const OLD_STARTERS = [
+  'console.log("Hello, World!");',
+  'print("Hello, World!")',
+  '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}',
+  'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+];
+
+const changeLanguage = (lang) => {
   const editor = editorRef.current;
   if (editor) {
-    const current = editor.getValue();
-    const untouched = Object.values(TEMPLATES).includes(current);
-    if (current.trim() === "" || untouched) {
+    const clean = (s) => s.replace(/\r/g, "").trim();
+    const current = clean(editor.getValue());
+    const known = [...Object.values(TEMPLATES), ...OLD_STARTERS].map(clean);
+    if (current === "" || known.includes(current)) {
       editor.setValue(TEMPLATES[lang]);
     }
   }
@@ -300,21 +308,21 @@ const nativeShare = async () => {
 
       <div className="typing">{typingUser && `${typingUser} is typing...`}</div>
 
-   <div className="editor-card">
-  <Editor
-    height="55vh"
-    language={language}
-    theme={theme}
-    onMount={handleMount}
-    options={{
-      fontSize: 14,
-      fontFamily: "Fira Code, monospace",
-      minimap: { enabled: false },
-      padding: { top: 8 },
-      scrollBeyondLastLine: false,
-    }}
-  />
-</div>
+      <div className="editor-card">
+        <Editor
+          height="55vh"
+          language={language}
+          theme={theme}
+          onMount={handleMount}
+          options={{
+            fontSize: 14,
+            fontFamily: "Fira Code, monospace",
+            minimap: { enabled: false },
+            padding: { top: 8 },
+            scrollBeyondLastLine: false,
+          }}
+        />
+      </div>
 
       <div className="output-label">Output</div>
       <pre className="output">{output || "Run your code to see output here"}</pre>
