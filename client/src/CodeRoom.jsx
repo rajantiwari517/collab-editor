@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import * as Y from "yjs";
@@ -77,7 +78,7 @@ function registerSnippets(monaco) {
     });
   });
 }
-export default function CodeRoom({ roomId, username }) {
+export default function CodeRoom({ roomId, username, onLogout }) {
   const [users, setUsers] = useState([]);
   const [language, setLanguage] = useState("javascript");
   const [copied, setCopied] = useState(false);
@@ -305,6 +306,7 @@ const changeLanguage = (lang) => {
         <button className="primary" onClick={runCode} disabled={running}>
           {running ? "Running..." : "Run code"}
         </button>
+        <button onClick={onLogout}>Log out</button>
       </div>
 
       <div className="typing">{typingUser && `${typingUser} is typing...`}</div>

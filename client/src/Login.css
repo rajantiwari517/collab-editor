@@ -1,0 +1,118 @@
+.auth-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f7fb;
+  color: #5b6479;
+  font-family: "Manrope", system-ui, sans-serif;
+}
+
+.login-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f6f7fb;
+  color: #1c2333;
+  font-family: "Manrope", system-ui, sans-serif;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  padding: 32px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 8px 32px rgba(28, 35, 51, 0.1);
+}
+
+.login-brand {
+  margin: 0 0 4px;
+  font-size: 26px;
+  font-weight: 800;
+  color: #2557d6;
+}
+.login-sub {
+  margin: 0 0 22px;
+  font-size: 14px;
+  color: #5b6479;
+}
+
+.login-card label {
+  display: block;
+  margin: 14px 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.login-card input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d9dee8;
+  border-radius: 12px;
+  background: #fff;
+  color: #1c2333;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+}
+.login-card input:focus { border-color: #2557d6; }
+
+.login-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 13px;
+  border: none;
+  border-radius: 999px;
+  background: #2557d6;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.login-btn:hover { opacity: 0.9; }
+.login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.login-btn.google {
+  margin-top: 0;
+  background: #fff;
+  color: #1c2333;
+  border: 1px solid #d9dee8;
+}
+
+.login-divider {
+  margin: 18px 0 2px;
+  text-align: center;
+  font-size: 12px;
+  color: #98a2bb;
+}
+
+.login-error {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fdecea;
+  color: #b3261e;
+  font-size: 13px;
+}
+
+.login-switch {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #5b6479;
+}
+.login-switch button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #2557d6;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
