@@ -41,20 +41,21 @@
   color: var(--muted);
 }
 
-.avatars { display: flex; }
-.avatar {
-  width: 34px;
-  height: 34px;
-  box-sizing: border-box;
-  border-radius: 50%;
+.avatars {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.avatar {
+  max-width: 160px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
   font-weight: 700;
   color: #fff;
-  border: 3px solid var(--bg);
-  margin-left: -10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .avatar:first-child { margin-left: 0; }
 .avatar.c0 { background: #2557d6; }

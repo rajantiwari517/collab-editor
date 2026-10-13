@@ -231,13 +231,13 @@ const changeLanguage = (lang) => {
       <div className="header">
         <span className="brand">CollabCode</span>
         <span className="room">Room {roomId}</span>
-        <div className="avatars">
-          {users.map((u, i) => (
-            <span key={i} className={`avatar c${i % 4}`} title={u}>
-              {u[0] + u.slice(-2)}
-            </span>
-          ))}
-        </div>
+       <div className="avatars">
+  {users.map((u, i) => (
+    <span key={i} className={`avatar c${i % 4}`} title={u}>
+      {u}
+    </span>
+  ))}
+</div>
 
         <div className="spacer" />
 
