@@ -43,13 +43,14 @@
 
 .avatars {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
 }
 .avatar {
+  box-sizing: border-box;
   max-width: 160px;
   padding: 6px 14px;
   border-radius: 999px;
+  border: 3px solid var(--bg);
+  margin-left: -16px;
   font-size: 13px;
   font-weight: 700;
   color: #fff;
@@ -57,7 +58,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.avatar:first-child { margin-left: 0; }
+.avatar:first-child {
+  margin-left: 0;
+}
 .avatar.c0 { background: #2557d6; }
 .avatar.c1 { background: #e8590c; }
 .avatar.c2 { background: #1a7f4b; }
@@ -340,3 +343,8 @@
   gap: 10px;
 }
 .panel-btn.accept { background: #1a9f5c; }
+.avatar:hover {
+  position: relative;
+  z-index: 2;
+  max-width: none;
+}
