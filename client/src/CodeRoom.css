@@ -347,4 +347,73 @@
   position: relative;
   z-index: 2;
   max-width: none;
+}.view-badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff4e5;
+  color: #8a4b00;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.tab {
+  display: flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  border: 1px solid transparent;
+}
+.tab.active { border-color: var(--accent); }
+.tab button {
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.tab-name { padding: 8px 14px; font-size: 13px; font-weight: 700; }
+.tab-x { padding: 8px 12px 8px 0; font-size: 13px; color: var(--muted); }
+.tab-add {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px dashed var(--muted);
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.share-menu.left { right: auto; left: 0; }
+.tabs .share-menu button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+.tabs .share-menu button:hover { background: var(--bg); }
+
+.stdin {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--text);
+  font-family: "Fira Code", monospace;
+  font-size: 13px;
+  resize: vertical;
+  outline: none;
 }
